@@ -28,7 +28,7 @@ def always_login(username, password, testip, checkinterval):
 if __name__ == "__main__":
     username = "Your srun account name"
     password = "Your password"
-    testip = "114.114.114.114" # IP to test whether the Internet is connected
+    testip = "223.5.5.5" # IP to test whether the Internet is connected
     checkinterval = 5 * 60
 
     always_login(username, password, testip, checkinterval)
