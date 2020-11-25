@@ -10,15 +10,15 @@ from .encryption.srun_base64 import *
 from .encryption.srun_xencode import *
 
 header={
-	'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.26 Safari/537.36'
+	'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3239.26 Safari/537.36'
 }
 
 		
 class LoginManager:
 	def __init__(self,
-		url_login_page = "http://10.0.0.55/srun_portal_pc?ac_id=8&theme=bit",
-		url_get_challenge_api = "http://10.0.0.55/cgi-bin/get_challenge",
-		url_login_api = "http://10.0.0.55/cgi-bin/srun_portal",
+		url_login_page = "http://10.248.98.2/srun_portal_pc?ac_id=8&theme=basic2",
+		url_get_challenge_api = "http://10.248.98.2/cgi-bin/get_challenge",
+		url_login_api = "http://10.248.98.2/cgi-bin/srun_portal",
 		n = "200",
 		vtype = "1",
 		acid = "1",
@@ -41,12 +41,13 @@ class LoginManager:
 
 		self.get_ip()
 		self.get_token()
-		self.get_login_responce()
+		self.get_login_response()
 
 	def get_ip(self):
 		print("Step1: Get local ip returned from srun server.")
 		self._get_login_page()
 		self._resolve_ip_from_login_page()
+		print("IP is",self.ip)
 		print("----------------")
 
 	def get_token(self):
@@ -55,11 +56,11 @@ class LoginManager:
 		self._resolve_token_from_challenge_response()
 		print("----------------")
 
-	def get_login_responce(self):
+	def get_login_response(self):
 		print("Step3: Loggin and resolve response.")
 		self._generate_encrypted_login_info()
 		self._send_login_info()
-		self._resolve_login_responce()
+		self._resolve_login_response()
 		print("The loggin result is: " + self._login_result)
 		print("----------------")
 
@@ -194,16 +195,17 @@ class LoginManager:
 			'n': self.n,
 			'type': self.vtype
 		}
-		self._login_responce = requests.get(self.url_login_api, params=login_info_params, headers=header)
+		self._login_response = requests.get(self.url_login_api, params=login_info_params, headers=header)
+		print(self._login_response.text)
 	
 	@checkvars(
-		varlist = "_login_responce",
-		errorinfo = "Need _login_responce. Run _send_login_info in advance"
+		varlist = "_login_response",
+		errorinfo = "Need _login_response. Run _send_login_info in advance"
 	)
 	@infomanage(
 		callinfo = "Resolving login result",
 		successinfo = "Login result successfully resolved",
 		errorinfo = "Cannot resolve login result. Maybe the srun response format is changed"
 	)
-	def _resolve_login_responce(self):
-		self._login_result = re.search('"suc_msg":"(.*?)"', self._login_responce.text).group(1)
+	def _resolve_login_response(self):
+		self._login_result = re.search('"suc_msg":"(.*?)"', self._login_response.text).group(1)
